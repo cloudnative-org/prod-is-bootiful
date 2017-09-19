@@ -3,9 +3,13 @@ package com.example.reservationservice;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
@@ -30,6 +34,8 @@ public class ReservationServiceApplication {
 @RestController
 class ReservationRestController {
 
+    Logger logger = LoggerFactory.getLogger(ReservationRestController.class);
+
     private final ReservationRepository reservationRepository;
 
     ReservationRestController(ReservationRepository reservationRepository) {
@@ -38,6 +44,7 @@ class ReservationRestController {
 
     @GetMapping("/reservations")
     Collection<Reservation> reservationCollections() {
+        logger.debug("matt was here!");
         return this.reservationRepository.findAll();
     }
 }
@@ -76,4 +83,13 @@ class Reservation {
     private Long id;
 
     private String reservationName; // reservation_name
+}
+
+@Component
+class MyCustomHealthIndicator implements HealthIndicator {
+
+    @Override
+    public Health health() {
+        return Health.status("I <3 Production!").build();
+    }
 }
